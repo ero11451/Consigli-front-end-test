@@ -40,9 +40,9 @@ export default function HomePage() {
               </div>
             </div>
 
-            <select name="" id="">
+            {/* <select name="" id="">
               <option value=""></option>
-            </select>
+            </select> */}
           </aside>
 
           {/* Main preview area */}

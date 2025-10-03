@@ -13,7 +13,7 @@ function CeilingGrid(
     { width, height, tileSize = 60 }: CeilingGridProps & { selected?: GridComponent },
     ref: ForwardedRef<CeilingGridHandle>
 ) {
-    // create initial grid once then use memo to prevent re-creating
+    // Create the initial grid once (memoized) to avoid recreating it on every render.
     const initialGrid = useMemo(
         () =>
             Array.from({ length: height }, (_, y) =>
@@ -24,29 +24,31 @@ function CeilingGrid(
 
     const [grid, setGrid] = useState<GridCell[][]>(initialGrid);
 
-    // track the source cell while dragging from grid (nullable coordinates)
-    const [currentToolPosition, setCurrentToolPosition] = useState<{ x: number | null; y: number | null , component:GridComponent | null}>({
+    // Track the source cell while dragging from the grid.
+    // Coordinates are nullable until a drag starts.
+    const [currentToolPosition, setCurrentToolPosition] = useState<{ x: number | null; y: number | null, component: GridComponent | null }>({
         x: null,
         y: null,
-        component:null
+        component: null
     });
 
-    // helper to set a cell's component (component may be null)
-    const updateCell = (x: number, y: number, component: GridComponent | null, ) => {
+    // Update a cell's component (can set to null to clear the cell).
+    const updateCell = (x: number, y: number, component: GridComponent | null,) => {
         setGrid((prev) =>
             prev.map((row) => row.map((cell) => (cell.x === x && cell.y === y ? { ...cell, component } : cell)))
         );
     };
 
-    // expose clearAll() to parent via ref this remove all the component (tools) from the grid from the parent
+    // Expose clearAll() via ref so the parent can clear all placed components.
     useImperativeHandle(ref, () => ({
         clearAll: () => {
             setGrid((prev) => prev.map((row) => row.map((c) => ({ ...c, component: null }))));
         },
     }));
 
-    // drop handler: read tool label from dataTransfer or fallback to selected
-    const onCellDrop = (e: React.DragEvent, cellX: number, cellY: number, _component:GridComponent,  ) => {
+    // Drop handler — determine incoming tool (from dataTransfer or fallback)
+    // then place it in the target cell and clear the source if it was a move.
+    const onCellDrop = (e: React.DragEvent, cellX: number, cellY: number, _component: GridComponent,) => {
         e.preventDefault();
         // first we want to update the cell with the component
         updateCell(cellX, cellY, currentToolPosition.component || _component);
@@ -55,17 +57,17 @@ function CeilingGrid(
         if (sx !== null && sy !== null && (sx !== cellX || sy !== cellY)) {
             updateCell(sx, sy, null);
         }
-        
+
         // reset source position after drop
-        setCurrentToolPosition({ x: null, y: null , component: null});
+        setCurrentToolPosition({ x: null, y: null, component: null });
     };
-    // on the event handler we want to get access to the element selected
+    // Allow drops by preventing default; set the drop effect (copy).
     const onDragOver = (e: React.DragEvent) => {
         e.preventDefault();
         e.dataTransfer.dropEffect = "copy";
     };
 
-    // start dragging from a grid cell — record its coords
+    // Start dragging a filled cell: record its coordinates and component.
     const onCellDragStart = (_e: React.DragEvent, cell: GridCell,) => {
         if (!cell.component) return;
         setCurrentToolPosition({ x: cell.x, y: cell.y, component: cell.component });
@@ -102,11 +104,11 @@ function CeilingGrid(
                         key={`${cell.x}-${cell.y}`}
                         style={{ width: tileSize, height: tileSize }}
                         draggable={!!cell.component} // only draggable if it contains a component
-                        onDragStart={(e) =>  onCellDragStart(e, cell)}
-                        onDrop={(e) => 
-                             cell.component == "Invalid" ? alert("the cell is invalid") :
-                             onCellDrop(e, cell.x, cell.y, e.dataTransfer.getData("text/plain") as GridComponent )
-                            }
+                        onDragStart={(e) => onCellDragStart(e, cell)}
+                        onDrop={(e) =>
+                            cell.component == "Invalid" ? alert("the cell is invalid") :
+                                onCellDrop(e, cell.x, cell.y, e.dataTransfer.getData("text/plain") as GridComponent)
+                        }
                         onDragOver={onDragOver}
                         className="border border-gray-200 flex items-center justify-center hover:bg-gray-50 cursor-pointer select-none"
                     >
