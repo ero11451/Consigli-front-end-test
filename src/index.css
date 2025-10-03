@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+:root {
+    --cell-size: 64px;
+}
+
+.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    min-width: var(--cell-size);
+    min-height: var(--cell-size);
+}
