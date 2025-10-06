@@ -14,9 +14,7 @@ export interface CeilingGridProps {
   height: number; // number of tiles vertically
   tileSize?: number; // optional, default 60px for visualization
   onDeleteMode? : false;
-  selected: GridComponent;
   ref?: React.Ref<{ clearAll: () => void }>
-  setSelected: (tool: GridComponent) => void;
 }
 
 export interface CeilingGridHandle {

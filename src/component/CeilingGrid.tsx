@@ -10,7 +10,7 @@ import type { CeilingGridHandle, CeilingGridProps, GridCell, GridComponent } fro
 
 
 function CeilingGrid(
-    { width, height, tileSize = 60 }: CeilingGridProps & { selected?: GridComponent },
+    { width, height, tileSize = 60 }: CeilingGridProps,
     ref: ForwardedRef<CeilingGridHandle>
 ) {
     // Create the initial grid once (memoized) to avoid recreating it on every render.
@@ -73,6 +73,7 @@ function CeilingGrid(
         setCurrentToolPosition({ x: cell.x, y: cell.y, component: cell.component });
     };
 
+    // this function will act as the element creation function that based on the input from the dragged element
     const renderComponent = (c: GridComponent) => {
         switch (c) {
             case "Light":
@@ -99,6 +100,7 @@ function CeilingGrid(
                     gridTemplateRows: `repeat(${height}, ${tileSize}px)`,
                 }}
             >
+                {/* the flat method spread the array */}
                 {grid.flat().map((cell) => (
                     <div
                         key={`${cell.x}-${cell.y}`}
@@ -106,12 +108,13 @@ function CeilingGrid(
                         draggable={!!cell.component} // only draggable if it contains a component
                         onDragStart={(e) => onCellDragStart(e, cell)}
                         onDrop={(e) =>
-                            cell.component == "Invalid" ? alert("the cell is invalid") :
+                            cell.component == "Invalid" ? alert("The cell is invalid") :
                                 onCellDrop(e, cell.x, cell.y, e.dataTransfer.getData("text/plain") as GridComponent)
                         }
                         onDragOver={onDragOver}
                         className="border border-gray-200 flex items-center justify-center hover:bg-gray-50 cursor-pointer select-none"
                     >
+                        {/* this will create the element on the automatically we already have a switch statement that select the valid element to render */}
                         {renderComponent(cell.component)}
                     </div>
                 ))}

@@ -6,6 +6,6 @@ export const tools = [
   { label: "Invalid", color: "bg-stone-300 text-slate-900" },
   { label: "Delete", color: "bg-red-700 text-white" },
 ] as const;
-// i used as const to make the value constant read on
+// i used as const to make the value constant read only
 
 export type ITool = (typeof tools)[number]["label"];

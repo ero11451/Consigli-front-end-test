@@ -6,7 +6,7 @@ import type { CeilingGridHandle } from "../interfaces/IGrid";
 
 
 export default function HomePage() {
-  const [selected, setSelected] = useState<ITool | null>("Light");
+  // const [selected, setSelected] = useState<ITool | null>("Light");
   const gridRef = useRef<CeilingGridHandle>(null);
 
   return (
@@ -20,7 +20,7 @@ export default function HomePage() {
 
             <div className="mt-6">
               <div className="mt-2 ">
-                <Toolbar selected={selected} onSelect={(t) => setSelected(t)} />
+                <Toolbar />
                 <button
                   onClick={() => gridRef.current?.clearAll()}
                   className="py-2 px-3 mt-3 bg-red-50 text-red-700 rounded border"
@@ -49,7 +49,7 @@ export default function HomePage() {
           <main className="flex-1 p-6 ">
             <ZoomProvider >
               <div className="p-10 bg-gray-50 " style={{ width: "100%", height: "100%" , backgroundColor:""}}>
-                <CeilingGrid width={12} height={8} tileSize={50} ref={gridRef} selected={selected} setSelected={setSelected} />
+                <CeilingGrid width={12} height={8} tileSize={50} ref={gridRef} />
               </div>
             </ZoomProvider>
           </main>
